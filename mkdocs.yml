@@ -1,0 +1,96 @@
+site_name: Elephantronics Docs
+site_url: https://docs.elephantronics.com
+site_description: Technical documentation for Elephantronics products — Solar, Automation, Smart Home, and SBCs.
+repo_url: https://github.com/elephantronics/docs
+repo_name: elephantronics/docs
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  font:
+    text: DM Sans
+    code: JetBrains Mono
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.instant
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+
+extra_css:
+  - assets/extra.css
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+
+nav:
+  - Home: index.md
+
+  - "☀️ Solar Systems":
+    - Overview: solar/index.md
+    - Products:
+      - SolarEdge Pro 5K: solar/solaredge-pro-5k.md
+      - SunPower Elite 8K: solar/sunpower-elite-8k.md
+      - GridTie Nano 3K: solar/gridtie-nano-3k.md
+
+  - "⚙️ Automation":
+    - Overview: automation/index.md
+    - Products:
+      - ElephantPLC X1: automation/elephant-plc-x1.md
+      - HMI Panel 7": automation/hmi-panel-7.md
+      - HMI Panel 10": automation/hmi-panel-10.md
+
+  - "🏠 Smart Home":
+    - Overview: smart-home/index.md
+    - Products:
+      - ZigHub Pro: smart-home/zighub-pro.md
+      - SmartRelay 8CH: smart-home/smartrelay-8ch.md
+      - SenseNode Mini: smart-home/sensenode-mini.md
+
+  - "🖥️ SBCs & Mini PCs":
+    - Overview: sbcs-mini-pcs/index.md
+    - Products:
+      - ElephantPi 4B: sbcs-mini-pcs/elephantpi-4b.md
+      - EdgeBox AI: sbcs-mini-pcs/edgebox-ai.md
+      - MiniPC Industrial X1: sbcs-mini-pcs/minipc-industrial-x1.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
