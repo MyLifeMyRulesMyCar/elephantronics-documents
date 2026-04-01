@@ -6,7 +6,6 @@ repo_name: elephantronics/docs
 
 theme:
   name: material
-  custom_dir: docs/overrides
   font:
     text: DM Sans
     code: JetBrains Mono
