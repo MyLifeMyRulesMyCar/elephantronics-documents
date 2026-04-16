@@ -9,8 +9,8 @@ hide:
   <h1>Build Smarter with<br>Elephantronics</h1>
   <p>Everything you need to install, configure, and get the most out of your Elephantronics products — from solar inverters to industrial SBCs.</p>
   <div class="hero-buttons">
-    <a href="solar/index.md" class="hero-btn hero-btn-primary">⚡ Get Started</a>
-    <a href="index.md#categories" class="hero-btn hero-btn-secondary">Browse Products →</a>
+    <a href="solar/" class="hero-btn hero-btn-primary">⚡ Get Started</a>
+    <a href="#categories" class="hero-btn hero-btn-secondary">Browse Products →</a>
   </div>
 </div>
 
@@ -20,28 +20,28 @@ hide:
 
 <div class="category-grid">
 
-  <a href="solar/index.md" class="category-card" style="--card-accent:#f59e0b;">
+  <a href="solar/" class="category-card" style="--card-accent:#f59e0b;">
     <div class="card-icon">☀️</div>
     <div class="card-title">Solar System Guides</div>
     <div class="card-desc">Design, install, and maintain solar power systems — from grid-tie to off-grid setups with smart monitoring.</div>
     <div class="card-count">⚡ 3 products &nbsp;·&nbsp; Inverters, panels, controllers</div>
   </a>
 
-  <a href="automation/index.md" class="category-card" style="--card-accent:#3b82f6;">
+  <a href="automation/" class="category-card" style="--card-accent:#3b82f6;">
     <div class="card-icon">⚙️</div>
     <div class="card-title">Automation Guides</div>
     <div class="card-desc">Configure PLCs, HMI panels, and industrial control systems for reliable factory and process automation.</div>
     <div class="card-count">🤖 3 products &nbsp;·&nbsp; PLCs, HMIs, SCADA</div>
   </a>
 
-  <a href="smart-home/index.md" class="category-card" style="--card-accent:#10b981;">
+  <a href="smart-home/" class="category-card" style="--card-accent:#10b981;">
     <div class="card-icon">🏠</div>
     <div class="card-title">Smart Home Setup</div>
     <div class="card-desc">Set up Zigbee hubs, smart relays, and sensor nodes to build an intelligent, connected home environment.</div>
     <div class="card-count">🔗 3 products &nbsp;·&nbsp; Zigbee, IoT, sensors</div>
   </a>
 
-  <a href="sbcs-mini-pcs/index.md" class="category-card" style="--card-accent:#8b5cf6;">
+  <a href="sbcs-mini-pcs/" class="category-card" style="--card-accent:#8b5cf6;">
     <div class="card-icon">🖥️</div>
     <div class="card-title">SBCs & Mini PCs</div>
     <div class="card-desc">Deploy compact computing solutions for edge AI, industrial automation, and embedded applications.</div>

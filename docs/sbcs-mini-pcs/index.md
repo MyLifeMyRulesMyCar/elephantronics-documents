@@ -12,6 +12,19 @@ hide:
 
 <div class="product-grid">
 
+  <a href="purple-pi-oh2/" class="product-card">
+  <div class="prod-label">Single Board Computer</div>
+  <div class="prod-name">Purple Pi OH2</div>
+  <div class="prod-tagline">RK3576 octa-core SBC with 6 TOPS NPU, 8K HDMI 2.1, triple MIPI cameras, and dual Gigabit Ethernet — built for industrial edge AI.</div>
+  <div class="prod-specs">
+    <span class="prod-spec-tag">RK3576</span>
+    <span class="prod-spec-tag">6 TOPS NPU</span>
+    <span class="prod-spec-tag">Dual GbE</span>
+    <span class="prod-spec-tag">8K HDMI</span>
+  </div>
+  <div class="prod-arrow">View documentation →</div>
+</a>
+
   <a href="elephantpi-4b/" class="product-card">
     <div class="prod-label">Single Board Computer</div>
     <div class="prod-name">ElephantPi 4B</div>

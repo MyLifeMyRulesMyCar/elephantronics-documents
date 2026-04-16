@@ -71,9 +71,11 @@ nav:
   - "🖥️ SBCs & Mini PCs":
     - Overview: sbcs-mini-pcs/index.md
     - Products:
+      - Purple Pi OH2: sbcs-mini-pcs/purple-pi-oh2.md
       - ElephantPi 4B: sbcs-mini-pcs/elephantpi-4b.md
       - EdgeBox AI: sbcs-mini-pcs/edgebox-ai.md
       - MiniPC Industrial X1: sbcs-mini-pcs/minipc-industrial-x1.md
+      
 
 markdown_extensions:
   - admonition
