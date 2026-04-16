@@ -1,7 +1,7 @@
 site_name: Elephantronics Docs
 site_url: https://docs.elephantronics.com
 site_description: Technical documentation for Elephantronics products — Solar, Automation, Smart Home, and SBCs.
-repo_url: https://github.com/elephantronics/docs
+repo_url: https://github.com/MyLifeMyRulesMyCar/elephantronics-documents/docs
 repo_name: elephantronics/docs
 
 theme:
