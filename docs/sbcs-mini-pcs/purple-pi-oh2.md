@@ -23,6 +23,16 @@
 
 ---
 
+## Main Board Overview
+
+### Front View
+![Front View](images/front-labeled.png)
+
+### Back View
+![Back View](images/back-labeled.png)
+
+---
+
 ## Technical Specifications
 
 <table class="specs-table">
@@ -120,6 +130,8 @@ bluetoothctl connect XX:XX:XX:XX:XX:XX  # Connect
 ---
 
 ## GPIO (40-pin Header)
+
+![GPIO Pinout](images/gpio.png){ width="400" }
 
 The 40-pin header is Raspberry Pi HAT-compatible and exposes 16 GPIOs, UART, I2C, SPI, and CAN. All GPIO logic is 3.3V.
 
