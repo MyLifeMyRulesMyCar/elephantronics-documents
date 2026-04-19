@@ -253,3 +253,357 @@ finally:
 ```bash
 sudo python3 di_event.py
 ```
+
+---
+
+## I2C OLED (SSD1306) Complete Guide
+
+!!! warning "Disconnect power first"
+    Remove power before connecting the SSD1306 OLED Display to avoid damaging the device.
+
+---
+
+###  Overview
+
+This guide covers:
+
+* Detecting I2C devices
+* Communicating via Python
+* Displaying text on OLED
+* Rendering images + custom graphics
+
+---
+
+### Wiring (SSD1306 OLED)
+
+| OLED Pin | Purple Pi |
+| -------- | --------- |
+| VCC      | 3.3V      |
+| GND      | GND       |
+| SDA      | Pin 3     |
+| SCL      | Pin 5     |
+
+#### Interpretation
+
+| Item           | Value        |
+| -------------- | ------------ |
+| I2C Bus        | `/dev/i2c-4` |
+| Device Address | `0x3C`       |
+| Device Type    | SSD1306 OLED |
+
+---
+
+### Detect I2C Bus
+
+#### List available I2C buses:
+
+```bash
+ls /dev/i2c-*
+```
+
+**Example output:**
+
+```
+/dev/i2c-0 ... /dev/i2c-7
+```
+
+---
+
+### Scan for I2C Devices
+
+!!! warning "Root permission required"
+    Scanning I2C buses requires sudo access.
+
+```bash
+sudo i2cdetect -y 4
+```
+
+**Output:**
+
+```
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:                         -- -- -- -- -- -- -- -- 
+10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+30: -- -- -- -- -- -- -- -- -- -- 3c -- -- -- 
+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+70: -- -- -- -- -- -- -- -- 
+```
+
+**Device found at:**
+
+```
+0x3C
+```
+
+---
+
+### Install Required Packages
+
+```bash
+sudo apt update
+sudo apt install i2c-tools -y
+pip install python-periphery pillow
+```
+
+---
+
+### Basic I2C Test
+
+Create the `i2c_test.py` script:
+
+```python
+from periphery import I2C
+import time
+
+# Purple Pi OH2 Configuration
+I2C_BUS = "/dev/i2c-4"  # Confirmed by your i2cdetect output
+I2C_ADDR = 0x3C         # Confirmed by your scan
+
+def main():
+    try:
+        # Open I2C connection
+        i2c = I2C(I2C_BUS)
+        print(f"Connected to {I2C_BUS}, device at {hex(I2C_ADDR)}")
+
+        # SSD1306 Initialization Sequence
+        init_sequence = [
+            0xAE,  # Display off
+            0x00, 0x10, 0x40, 0xB0, 0x81, 0xCF, 0xA1, 0xA6,
+            0xA8, 0x3F, 0xC8, 0xD3, 0x00, 0xD5, 0x80, 0xD9,
+            0xF1, 0xDA, 0x12, 0xDB, 0x40, 0x8D, 0x14, 0xAF  # Display on
+        ]
+
+        # Send initialization commands
+        for cmd in init_sequence:
+            i2c.transfer(I2C_ADDR, [I2C.Message([0x00, cmd])])
+        time.sleep(0.1)
+
+        # Clear display function
+        def clear_display():
+            for page in range(8):
+                # Set page address
+                i2c.transfer(I2C_ADDR, [I2C.Message([0x00, 0xB0 + page])])
+                # Set column address
+                i2c.transfer(I2C_ADDR, [I2C.Message([0x00, 0x00])])
+                i2c.transfer(I2C_ADDR, [I2C.Message([0x00, 0x10])])
+                # Write zeros to all columns
+                for _ in range(128):
+                    i2c.transfer(I2C_ADDR, [I2C.Message([0x40, 0x00])])
+
+        clear_display()
+
+        # Simple 5x7 font
+        font = {
+            'H': [0x7F, 0x08, 0x08, 0x08, 0x7F],
+            'e': [0x38, 0x54, 0x54, 0x54, 0x18],
+            'l': [0x00, 0x41, 0x7F, 0x40, 0x00],
+            'o': [0x38, 0x44, 0x44, 0x44, 0x38],
+            ' ': [0x00, 0x00, 0x00, 0x00, 0x00],
+        }
+        
+        text = "Hello"
+
+        # Position at page 1
+        i2c.transfer(I2C_ADDR, [I2C.Message([0x00, 0xB1])])
+        # Set column to 0
+        i2c.transfer(I2C_ADDR, [I2C.Message([0x00, 0x00])])
+        i2c.transfer(I2C_ADDR, [I2C.Message([0x00, 0x10])])
+
+        # Write each character
+        for char in text:
+            char_data = font.get(char, [0x00]*5)
+            for col in char_data:
+                i2c.transfer(I2C_ADDR, [I2C.Message([0x40, col])])
+            # Space between characters
+            i2c.transfer(I2C_ADDR, [I2C.Message([0x40, 0x00])])
+
+        print("Text sent successfully!")
+        i2c.close()
+
+    except Exception as e:
+        print(f"Error: {e}")
+        print("\nTroubleshooting:")
+        print("1. Make sure you're using sudo: sudo python3 i2c_test.py")
+        print("2. Check wiring: SDA=Pin3, SCL=Pin5, VCC=Pin1(3.3V), GND=Pin9")
+
+if __name__ == "__main__":
+    main()
+```
+
+#### Run the Test:
+
+```bash
+sudo python3 i2c_test.py
+```
+
+**Expected Output:**
+
+```
+Connected to /dev/i2c-4, device at 0x3c
+Text sent successfully!
+```
+
+---
+
+## Display Image (Bitmap)
+
+### Generate Bitmap
+
+First, create a bitmap from your image. Place your graphics file in the project directory, then create `converter.py`:
+
+```python
+from PIL import Image
+
+# Load image - replace with yours
+img = Image.open("elephant.png").convert("L") 
+
+# Resize smaller (leave space for text)
+img = img.resize((128, 48))
+
+# Convert to black/white
+img = img.point(lambda x: 0 if x < 128 else 255, '1')
+
+# Create empty OLED buffer
+buffer = [0x00] * (128 * 8)
+
+pixels = img.load()
+
+# Center vertically (top area)
+y_offset = 0   # top aligned (can change to center if you want)
+
+for x in range(128):
+    for y in range(48):
+        if pixels[x, y] == 0:
+            oled_y = y + y_offset
+            page = oled_y // 8
+            index = x + (page * 128)
+            buffer[index] |= (1 << (oled_y % 8))
+
+# Save buffer
+with open("elephant_bitmap.py", "w") as f:
+    f.write("elephant_bitmap = [\n")
+    for i in range(0, len(buffer), 16):
+        line = ", ".join(f"0x{b:02X}" for b in buffer[i:i+16])
+        f.write(f"    {line},\n")
+    f.write("]\n")
+
+print("Smaller elephant bitmap generated!")
+```
+
+#### Run the Converter:
+
+```bash
+python3 converter.py
+```
+
+**Output:** `elephant_bitmap.py` file is created
+
+---
+
+### Create `oled_image.py`
+
+This script displays the image with text. Adjust positioning and text as needed:
+
+```python
+from periphery import I2C
+from elephant_bitmap import elephant_bitmap
+
+I2C_BUS = "/dev/i2c-4"
+I2C_ADDR = 0x3C
+
+i2c = I2C(I2C_BUS)
+
+def send_cmd(cmd):
+    i2c.transfer(I2C_ADDR, [I2C.Message([0x00, cmd])])
+
+def send_data(data):
+    i2c.transfer(I2C_ADDR, [I2C.Message([0x40] + data)])
+
+# -------- INIT --------
+def init_display():
+    cmds = [
+        0xAE, 0x20, 0x00, 0xB0, 0xC8, 0x00, 0x10,
+        0x40, 0x81, 0xFF, 0xA1, 0xA6, 0xA8, 0x3F,
+        0xA4, 0xD3, 0x00, 0xD5, 0xF0, 0xD9, 0x22,
+        0xDA, 0x12, 0xDB, 0x20, 0x8D, 0x14, 0xAF
+    ]
+    for c in cmds:
+        send_cmd(c)
+
+# -------- TEXT DRAW --------
+def draw_centered_text_on_buffer(buffer, text):
+    font = {
+        'E':[0x7F,0x49,0x49,0x49,0x41],
+        'l':[0x00,0x41,0x7F,0x40,0x00],
+        'e':[0x38,0x54,0x54,0x54,0x18],
+        'p':[0x7C,0x14,0x14,0x14,0x08],
+        'h':[0x7F,0x08,0x08,0x08,0x70],
+        'a':[0x20,0x54,0x54,0x54,0x78],
+        'n':[0x7C,0x08,0x04,0x04,0x78],
+        't':[0x04,0x3F,0x44,0x40,0x20],
+        'r':[0x7C,0x08,0x04,0x04,0x08],
+        'o':[0x38,0x44,0x44,0x44,0x38],
+        'i':[0x00,0x44,0x7D,0x40,0x00],
+        'c':[0x38,0x44,0x44,0x44,0x20],
+        's':[0x48,0x54,0x54,0x54,0x20],
+    }
+
+    char_width = 6
+    text_width = len(text) * char_width
+    start_x = (128 - text_width) // 2
+
+    page = 7  # bottom page
+
+    for i, char in enumerate(text):
+        char_data = font.get(char, [0x00]*5)
+
+        for col in range(5):
+            x = start_x + i * char_width + col
+            if 0 <= x < 128:
+                index = x + (page * 128)
+                buffer[index] = char_data[col]
+
+        # spacing column
+        x = start_x + i * char_width + 5
+        if 0 <= x < 128:
+            buffer[x + (page * 128)] = 0x00
+
+# -------- DISPLAY --------
+def display_image(buffer):
+    for page in range(8):
+        send_cmd(0xB0 + page)
+        send_cmd(0x00)
+        send_cmd(0x10)
+        start = page * 128
+        send_data(buffer[start:start+128])
+
+# -------- MAIN --------
+try:
+    init_display()
+
+    # Copy original buffer (important!)
+    buffer = elephant_bitmap.copy()
+
+    # Add centered text
+    draw_centered_text_on_buffer(buffer, "Elephantronics")
+
+    # Display final image
+    display_image(buffer)
+
+    print("🐘 Elephant + Elephantronics displayed!")
+
+except Exception as e:
+    print("Error:", e)
+
+finally:
+    i2c.close()
+```
+
+#### Run Image Display:
+
+```bash
+sudo python3 oled_image.py
+```
