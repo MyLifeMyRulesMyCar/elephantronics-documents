@@ -607,3 +607,139 @@ finally:
 ```bash
 sudo python3 oled_image.py
 ```
+
+---
+
+## UART
+
+!!! warning "Connect pins first"
+    Connect GPIO 8 (TX) and GPIO 10 (RX) together for loopback testing.
+
+---
+
+### Overview
+
+This guide covers:
+
+* Testing UART with microcom
+* Python serial communication
+* Loopback test example
+
+---
+
+### Wiring (Loopback Test)
+
+| Pin # | Function  | Connection |
+|------:|----------|------------|
+| 8     | UART7_TX | Connect to Pin 10 |
+| 10    | UART7_RX | Connect to Pin 8  |
+
+#### Interpretation
+
+| Item       | Value        |
+| ---------- | ------------ |
+| UART Port  | `/dev/ttyS7` |
+| Baud Rate  | 115200       |
+| Device     | UART7        |
+
+---
+
+### Install Required Packages
+
+```bash
+sudo apt update
+sudo apt install microcom python3-serial -y
+```
+
+---
+
+### Test with microcom
+
+!!! warning "Root permission required"
+    UART access requires sudo.
+
+```bash
+sudo microcom -s 115200 -p /dev/ttyS7
+```
+
+**Expected behavior:** Type characters - you should see them echoed back immediately.
+
+Press `Ctrl + X` to exit.
+
+---
+
+### Python Loopback Test
+
+Create `loopback_test.py`:
+
+```python
+import serial
+import time
+
+# Configuration for Purple Pi OH2 UART7
+UART_PORT = "/dev/ttyS7"
+BAUD_RATE = 115200
+
+try:
+    # Initialize serial port
+    ser = serial.Serial(
+        port=UART_PORT,
+        baudrate=BAUD_RATE,
+        bytesize=serial.EIGHTBITS,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        timeout=1
+    )
+
+    print(f"UART opened: {UART_PORT} @ {BAUD_RATE} baud")
+    print("Starting loopback test. Ensure TX (Pin 8) and RX (Pin 10) are connected.")
+    print("-" * 50)
+
+    counter = 0
+    while True:
+        # Construct and send a test message
+        message = f"Purple Pi OH2 Test #{counter}\n"
+        ser.write(message.encode())
+        print(f"Sent: {message.strip()}")
+
+        # Wait briefly for the echo
+        time.sleep(0.1)
+
+        # Check for received data
+        if ser.in_waiting:
+            response = ser.readline().decode(errors="ignore").strip()
+            if response:
+                print(f"Received: {response}")
+                if response == message.strip():
+                    print("--> Loopback SUCCESS!")
+                else:
+                    print("--> WARNING: Mismatch in sent/received data.")
+            else:
+                print("--> No data received (loopback failed).")
+        else:
+            print("--> No data in buffer (loopback failed).")
+
+        counter += 1
+        time.sleep(2) # Wait 2 seconds before next iteration
+
+except KeyboardInterrupt:
+    print("\nTest stopped by user.")
+except serial.SerialException as e:
+    print(f"Serial error: {e}")
+    print("Did you remember to connect Pin 8 to Pin 10?")
+finally:
+    if 'ser' in locals() and ser.is_open:
+        ser.close()
+        print("UART port closed.")
+```
+
+#### Run the Script
+
+!!! warning "sudo required"
+    UART access requires root privileges.
+
+```bash
+sudo python3 loopback_test.py
+```
+
+Stop the test at any time with `Ctrl + C`.
