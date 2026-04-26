@@ -104,59 +104,200 @@ GND (Pin 39)       →  LED (–)
 
 ---
 
+### Install gpiod
+
+First, install the required gpiod package:
+
+```bash
+pip install gpiod
+```
+
+---
+
+### Set GPIO Permissions
+
+Grant permissions to access GPIO devices:
+
+```bash
+sudo chmod 666 /dev/gpiochip*
+```
+
+---
+
 ### LED Control Scripts
 
-=== "Single blink"
+=== "Single blink - digital_output.py"
 
     ```python
+    #!/usr/bin/env python3
+    """
+    Simple LED On/Off for Purple Pi OH2
+    Using /dev/gpiochip3, line 3
+    """
+
     import gpiod
     import time
+    from gpiod.line import Direction, Value
 
-    chip = gpiod.Chip("gpiochip3")
-    line = chip.get_line(3)          # Pin 40 = gpiochip3 offset 3
-    line.request(consumer="LED", type=gpiod.LINE_REQ_DIR_OUT)
+    # Your specific GPIO pin
+    CHIP = '/dev/gpiochip3'
+    LINE = 3
 
-    print("LED ON")
-    line.set_value(1)
-    time.sleep(2)
+    def led_on():
+        """Turn LED on"""
+        with gpiod.request_lines(
+            CHIP,
+            consumer="led_control",
+            config={
+                LINE: gpiod.LineSettings(
+                    direction=Direction.OUTPUT,
+                    output_value=Value.ACTIVE,
+                )
+            },
+        ) as request:
+            request.set_value(LINE, Value.ACTIVE)
+            print("LED is ON")
 
-    print("LED OFF")
-    line.set_value(0)
-    line.release()
+    def led_off():
+        """Turn LED off"""
+        with gpiod.request_lines(
+            CHIP,
+            consumer="led_control",
+            config={
+                LINE: gpiod.LineSettings(
+                    direction=Direction.OUTPUT,
+                    output_value=Value.INACTIVE,
+                )
+            },
+        ) as request:
+            request.set_value(LINE, Value.INACTIVE)
+            print("LED is OFF")
+
+    def main():
+        print("Simple LED Controller - GPIO3 Line 3\n")
+        
+        # Turn LED on
+        led_on()
+        
+        # Wait 2 seconds
+        time.sleep(2)
+        
+        # Turn LED off
+        led_off()
+
+    if __name__ == "__main__":
+        main()
     ```
 
-=== "Continuous blink loop"
+=== "Continuous blink - blink.py"
 
     ```python
+    #!/usr/bin/env python3
+    """
+    Continuous LED Blinking for Purple Pi OH2
+    Using /dev/gpiochip3, line 3
+    Press Ctrl+C to stop
+    """
+
     import gpiod
     import time
+    import signal
+    import sys
+    from gpiod.line import Direction, Value
 
-    chip = gpiod.Chip("gpiochip3")
-    line = chip.get_line(3)
-    line.request(consumer="LED", type=gpiod.LINE_REQ_DIR_OUT)
+    # Your specific GPIO pin
+    CHIP = '/dev/gpiochip3'
+    LINE = 3
 
-    try:
+    # Global variable to control blinking
+    blinking = True
+
+    def signal_handler(sig, frame):
+        """Handle Ctrl+C gracefully"""
+        global blinking
+        print("\n\nStopping blinking...")
+        blinking = False
+        # Turn LED off before exiting
+        try:
+            with gpiod.request_lines(
+                CHIP,
+                consumer="led_control",
+                config={
+                    LINE: gpiod.LineSettings(
+                        direction=Direction.OUTPUT,
+                        output_value=Value.INACTIVE,
+                    )
+                },
+            ) as request:
+                request.set_value(LINE, Value.INACTIVE)
+                print("LED turned off")
+        except:
+            pass
+        sys.exit(0)
+
+    def continuous_blink(interval=0.5):
+        """Blink LED continuously until Ctrl+C is pressed"""
+        global blinking
+        
+        # Register signal handler for Ctrl+C
+        signal.signal(signal.SIGINT, signal_handler)
+        
+        print("Continuous Blinking Mode - GPIO3 Line 3")
+        print("Press Ctrl+C to stop\n")
+        
+        try:
+            with gpiod.request_lines(
+                CHIP,
+                consumer="led_blink",
+                config={
+                    LINE: gpiod.LineSettings(
+                        direction=Direction.OUTPUT,
+                        output_value=Value.INACTIVE,
+                    )
+                },
+            ) as request:
+                
+                while blinking:
+                    # LED ON
+                    request.set_value(LINE, Value.ACTIVE)
+                    print("LED ON")
+                    time.sleep(interval)
+                    
+                    # LED OFF
+                    request.set_value(LINE, Value.INACTIVE)
+                    print("LED OFF")
+                    time.sleep(interval)
+                    
+        except Exception as e:
+            print(f"Error: {e}")
+
+    def main():
+        # Start continuous blinking with 0.5 second intervals
+        continuous_blink(interval=0.5)
+        
+        # Keep the program running
         while True:
-            line.set_value(1)
-            time.sleep(1)
-            line.set_value(0)
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("Stopped")
-    finally:
-        line.set_value(0)
-        line.release()
+            time.sleep(0.1)
+
+    if __name__ == "__main__":
+        main()
     ```
 
 ---
 
 ### Run the Script
 
-!!! warning "sudo required"
-    GPIO access requires root privileges on this board.
+!!! warning "Permissions required"
+    GPIO access requires proper permissions. Make sure you've run the permission command above.
 
 ```bash
-sudo python3 led_controller.py
+python3 digital_output.py
+```
+
+Or for continuous blinking:
+
+```bash
+python3 blink.py
 ```
 
 Stop the blink loop at any time with `Ctrl + C`.
@@ -176,82 +317,89 @@ gpioget gpiochip3 3         # Read current state
 
 ---
 
-## Digital Input 
+## Digital Input
 
-### Connection :
+### Input Monitor Script
 
-* **GPIO7** → Input pin
-* **3.3V** → HIGH signal
-* **GND** → LOW signal
-
-> It is recommended to use a pull-up resistor to ensure a stable input signal and avoid floating values.
-
-### Method 1 – Polling (Continuous Reading)
+Use this code for GPIO input state change detection on Purple Pi OH2:
 
 ```python
+#!/usr/bin/env python3
+"""
+Simple GPIO Input with State Change Detection for Purple Pi OH2
+Using /dev/gpiochip2, line 12
+Press Ctrl+C to stop
+"""
+
 import gpiod
 import time
+from gpiod.line import Direction, Value, Bias, Edge
 
-chip = gpiod.Chip("gpiochip2")   # GPIO controller
-line = chip.get_line(12)         # GPIO76
+# Your specific GPIO input pin
+CHIP = '/dev/gpiochip2'
+LINE = 12
 
-# Request line as input
-line.request(consumer="di_test", type=gpiod.LINE_REQ_DIR_IN)
-
-try:
-    while True:
-        value = line.get_value()
-        print("DI Value:", value)  # 0 or 1
-        time.sleep(1)
-
-except KeyboardInterrupt:
-    print("Stopped")
-
-finally:
-    line.release()
-```
-
-#### Save and Run the Script
-
-```bash
-sudo python3 di_polling.py
-```
-
-### Method 2 – Event-Based (Interrupt Style)
-
-```python
-import gpiod
-
-chip = gpiod.Chip("gpiochip2")
-line = chip.get_line(12)
-
-line.request(
-    consumer="DI_event",
-    type=gpiod.LINE_REQ_EV_BOTH_EDGES
-)
-
-print("Waiting for input changes...")
-
-try:
-    while True:
-        if line.event_wait(sec=10):
-            event = line.event_read()
+def detect_state_changes():
+    """Detect and report state changes on GPIO input"""
+    print(f"Monitoring GPIO input on {CHIP}, line {LINE}")
+    print("Press Ctrl+C to stop\n")
+    
+    # Configure the GPIO line as input with pull-down
+    config = {
+        LINE: gpiod.LineSettings(
+            direction=Direction.INPUT,
+            bias=Bias.PULL_DOWN,  # Pull-down: LOW when nothing connected
+            edge_detection=Edge.BOTH,  # Detect both rising and falling edges
+        )
+    }
+    
+    try:
+        with gpiod.request_lines(
+            CHIP,
+            consumer="input_monitor",
+            config=config,
+        ) as request:
             
-            if event.type == gpiod.LineEvent.RISING_EDGE:
-                print("Signal HIGH (3.3V)")
-            elif event.type == gpiod.LineEvent.FALLING_EDGE:
-                print("Signal LOW (GND)")
+            previous_state = None
+            
+            while True:
+                # Read current value
+                current_value = request.get_value(LINE)
+                
+                # Check for state change
+                if previous_state is not None and current_value != previous_state:
+                    if current_value == Value.ACTIVE:
+                        print("🔘 HIGH (Button PRESSED or signal HIGH)")
+                    else:
+                        print("🔘 LOW (Button RELEASED or signal LOW)")
+                
+                previous_state = current_value
+                
+                # Small delay to prevent CPU overuse
+                time.sleep(0.01)
+                
+    except KeyboardInterrupt:
+        print("\n\nMonitoring stopped")
+    except Exception as e:
+        print(f"Error: {e}")
 
-except KeyboardInterrupt:
-    print("Stopped")
+def main():
+    print("=" * 50)
+    print("GPIO Input State Change Detector")
+    print("=" * 50)
+    detect_state_changes()
 
-finally:
-    line.release()
+if __name__ == "__main__":
+    main()
 ```
-#### Save and Run the Script
+
+### Run the Script
+
+Make sure GPIO permissions are granted before running the script:
 
 ```bash
-sudo python3 di_event.py
+sudo chmod 666 /dev/gpiochip*
+python3 digital_input.py
 ```
 
 ---
@@ -350,6 +498,16 @@ pip install python-periphery pillow
 
 ---
 
+### Set I2C Permissions
+
+Grant permissions to access I2C devices before running scripts:
+
+```bash
+sudo chmod 666 /dev/i2c-4
+```
+
+---
+
 ### Basic I2C Test
 
 Create the `i2c_test.py` script:
@@ -436,7 +594,7 @@ if __name__ == "__main__":
 #### Run the Test:
 
 ```bash
-sudo python3 i2c_test.py
+python3 i2c_test.py
 ```
 
 **Expected Output:**
@@ -605,7 +763,7 @@ finally:
 #### Run Image Display:
 
 ```bash
-sudo python3 oled_image.py
+python3 oled_image.py
 ```
 
 ---
@@ -651,6 +809,8 @@ sudo apt update
 sudo apt install microcom python3-serial -y
 ```
 
+
+
 ---
 
 ### Test with microcom
@@ -668,7 +828,25 @@ Press `Ctrl + X` to exit.
 
 ---
 
+### Prepare Python UART Access
+
+To run the Python loopback test without `sudo`, add your user to the `dialout` group and restart your session:
+
+```bash
+sudo usermod -a -G dialout $USER
+```
+
+After running this, log out and log back in. Close all VS Code SSH terminals, then open a fresh SSH session, activate the virtual environment, and run the test code.
+
+---
+
 ### Python Loopback Test
+
+Activate your Python virtual environment and install `pyserial`:
+
+```bash
+pip install pyserial
+```
 
 Create `loopback_test.py`:
 
@@ -735,11 +913,9 @@ finally:
 
 #### Run the Script
 
-!!! warning "sudo required"
-    UART access requires root privileges.
 
 ```bash
-sudo python3 loopback_test.py
+python3 loopback_test.py
 ```
 
 Stop the test at any time with `Ctrl + C`.
