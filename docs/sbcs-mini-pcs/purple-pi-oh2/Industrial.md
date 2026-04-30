@@ -211,3 +211,134 @@ python3 modbus_server_purplepi.py
 ### Conclusion
 
 This setup demonstrates a basic Modbus RTU master implementation using the Purple Pi OH2. It can be extended to interact with PLCs, industrial sensors, and other Modbus-compatible devices for real-world automation applications.
+
+---
+
+## MQTT Basics and Setup Guide
+
+### What is MQTT?
+
+MQTT (Message Queuing Telemetry Transport) is a lightweight messaging protocol designed for communication between devices, especially in IoT systems. It uses a publish–subscribe model, making it efficient for low-bandwidth and unreliable networks.
+
+---
+
+### Advantages of MQTT
+
+* **Lightweight protocol** – Uses minimal bandwidth, making it ideal for IoT and embedded devices.
+* **Efficient communication** – Publish/subscribe model reduces direct device-to-device communication overhead.
+* **Reliable message delivery** – Supports different Quality of Service (QoS) levels for message assurance.
+
+---
+
+### MQTT Components
+
+#### Client
+
+A client is any device or application that sends (publishes) or receives (subscribes to) messages in the MQTT system.
+
+#### Connection
+
+A connection is the network link established between a client and the broker using TCP/IP.
+
+#### Broker
+
+The broker is the central server that receives messages from publishers and distributes them to subscribers based on topics.
+
+---
+
+### How MQTT Works
+
+![MQTT](images/mqtt_1.png)
+
+MQTT works using a publish–subscribe communication model where clients do not communicate directly with each other. A publisher sends a message to a specific topic on the broker. The broker then forwards that message to all clients subscribed to that topic. This decouples devices, making the system scalable and efficient.
+
+---
+
+### Setting Up Purple Pi OH2 as an MQTT Broker
+
+**Step 1: Install Mosquitto**
+
+```bash
+sudo apt update
+sudo apt install -y mosquitto mosquitto-clients
+```
+
+---
+
+**Step 2: Enable Mosquitto Service**
+
+```bash
+sudo systemctl enable mosquitto.service
+```
+
+---
+
+**Step 3: Run Mosquitto Broker**
+
+```bash
+mosquitto -v
+```
+![MQTT](images/mqtt_3.png)
+---
+
+### Enable Remote Access (No Authentication)
+
+**Step 4: Edit Configuration File**
+
+```bash
+sudo nano /etc/mosquitto/mosquitto.conf
+```
+
+**Add the following at the end of the file:**
+
+```conf
+listener 1883
+allow_anonymous true
+```
+![MQTT](images/mqtt_2.png)
+
+**Save and exit:**
+
+* Press `CTRL + X`
+* Press `Y`
+* Press `Enter`
+
+---
+
+**Step 5: Restart Mosquitto**
+
+```bash
+sudo systemctl restart mosquitto
+```
+
+---
+
+### Testing MQTT Communication
+
+**Terminal 1 (Subscriber)**
+
+```bash
+mosquitto_sub -h localhost -t "test" -v
+```
+
+---
+
+**Terminal 2 (Publisher)**
+
+```bash
+mosquitto_pub -h localhost -t "test" -m "Hello from Purple Pi!"
+```
+
+---
+
+#### Expected Result
+
+The message published from Terminal 2 should appear in Terminal 1.
+
+![MQTT](images/mqtt_test.png)
+---
+
+### Notes
+
+* Port `1883` is the default MQTT port.
+* `allow_anonymous true` is useful for testing but **not recommended for production** due to security risks.

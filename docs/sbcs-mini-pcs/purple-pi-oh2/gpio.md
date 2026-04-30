@@ -94,6 +94,8 @@
 
 ### Hardware Wiring
 
+![DO cct](images/DO.png)
+
 ```
 Pin 40 (GPIO3_A3)  →  [220Ω resistor]  →  LED (+)
 GND (Pin 39)       →  LED (–)
