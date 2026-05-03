@@ -189,3 +189,183 @@ http://{Purple_Pi_OH2_IP_ADDRESS}:1880
 
 ![Interface](images/nodered.png)
 
+
+## OpenCV Installation
+
+### Overview
+
+![Opencv](images/opencv.png)
+
+OpenCV (Open Source Computer Vision Library) is used for image processing, video analysis, and AI-based vision applications.
+On the **Purple Pi OH2**, OpenCV enables building powerful computer vision and edge AI solutions.
+
+---
+
+### Update System
+
+```bash
+sudo apt update
+```
+
+---
+
+### Install Python libraries and basic tools, Codec Support, GStreamer Support, OpenCV:
+
+```bash
+sudo apt install python3-pil python3-numpy python3-pip git wget at-spi2-core
+sudo apt install libavcodec-dev libavformat-dev libswscale-dev
+sudo apt install libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev
+sudo apt install python3-opencv libopencv-dev
+sudo apt install python3-opencv libopencv-dev
+```
+
+
+
+---
+
+### Verify Installation
+
+```bash
+python3 -c "import cv2; print(cv2.__version__)"
+```
+
+**Expected Output**
+
+* Displays installed OpenCV version (e.g., `4.x.x`)
+* No errors should appear
+
+
+
+## ROS 2 Installation on Purple Pi OH2
+
+### Overview
+
+![ROS](images/ros2.png)
+
+ROS 2 (Robot Operating System 2) is a flexible framework for building robotics and automation applications.
+On the **Purple Pi OH2**, ROS 2 enables development of robotic systems, sensor integration, and real-time communication.
+
+---
+
+### Set Up Locale
+
+```bash
+sudo apt update && sudo apt install locales
+sudo locale-gen en_US en_US.UTF-8
+sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
+```
+
+---
+
+### Add ROS 2 Repository
+
+**Install Required Tools**
+
+```bash
+sudo apt install software-properties-common
+sudo add-apt-repository universe
+sudo apt update && sudo apt install curl -y
+```
+
+---
+
+**Add ROS 2 GPG Key**
+
+```bash
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+```
+
+---
+
+**Add Repository to Source List**
+
+```bash
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+```
+
+---
+
+### Install ROS 2 Humble
+
+**Update System**
+
+```bash
+sudo apt update
+sudo apt upgrade
+```
+
+---
+
+**Install Desktop Version**
+
+```bash
+sudo apt install ros-humble-desktop
+```
+
+---
+
+**Install Development Tools**
+
+```bash
+sudo apt install ros-dev-tools
+```
+
+---
+
+### Set Up Environment
+
+```bash
+echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+```
+
+---
+
+### Verify Installation
+
+**Terminal 1**
+
+```bash
+ros2 run demo_nodes_cpp talker
+```
+
+---
+
+**Terminal 2**
+
+```bash
+ros2 run demo_nodes_py listener
+```
+
+> You should see messages being published and received between nodes.
+
+![Opencv](images/test_ros.png)
+
+---
+
+### Run Simulation (Turtlesim)
+
+**Start Simulator**
+
+```bash
+ros2 run turtlesim turtlesim_node
+```
+
+---
+
+**Control the Turtle**
+
+```bash
+ros2 run turtlesim turtle_teleop_key
+```
+
+> Use your keyboard to move the turtle in the simulation window.
+
+![tutlesim](images/turtlesim.png)
+---
+
+
+
+
+
