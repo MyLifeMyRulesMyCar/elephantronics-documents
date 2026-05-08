@@ -75,6 +75,7 @@ nav:
       - GPIO Usage: sbcs-mini-pcs/purple-pi-oh2/gpio.md
       - Industrial: sbcs-mini-pcs/purple-pi-oh2/Industrial.md
       - Applications: sbcs-mini-pcs/purple-pi-oh2/Applications.md
+      - NPU: sbcs-mini-pcs/purple-pi-oh2/NPU.md
     - ElephantPi 4B: sbcs-mini-pcs/elephantpi-4b.md
     - EdgeBox AI: sbcs-mini-pcs/edgebox-ai.md
     - MiniPC Industrial X1: sbcs-mini-pcs/minipc-industrial-x1.md
