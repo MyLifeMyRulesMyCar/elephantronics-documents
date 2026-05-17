@@ -365,6 +365,108 @@ ros2 run turtlesim turtle_teleop_key
 ![tutlesim](images/turtlesim.png)
 ---
 
+## Home Assistant Docker Installation Guide
+
+### What is Home Assistant?
+
+![HA](images/HA.png)
+
+Home Assistant is an open-source home automation platform that runs on a local network and allows you to control smart devices, automate routines, and monitor your home from a single dashboard.
+
+### Verify Docker is Working
+
+**Check Docker version**
+```bash
+docker -v
+```
+
+**Check Docker service status**
+```bash
+sudo systemctl status docker
+```
+
+**Run the hello-world test**
+```bash
+docker run hello-world
+```
+
+**Check architecture**
+```bash
+dpkg --print-architecture
+```
+
+### Install Home Assistant Container
+
+**Create required directories**
+```bash
+sudo mkdir -p /opt/homeassistant/config
+sudo mkdir -p /opt/homeassistant/localtime
+```
+
+**Set permissions**
+```bash
+sudo chmod -R 777 /opt/homeassistant
+```
+
+**Run Home Assistant Container (Docker)**
+```bash
+docker run -d \
+  --name homeassistant \
+  --privileged \
+  --restart=unless-stopped \
+  -e TZ=Asia/Shanghai \
+  -v /opt/homeassistant/config:/config \
+  -v /run/dbus:/run/dbus:ro \
+  --network=host \
+  ghcr.io/home-assistant/home-assistant:stable
+```
+
+| Parameter                              | Meaning                                          |
+| -------------------------------------- | ------------------------------------------------ |
+| `-d`                                   | Run in background                                |
+| `--name homeassistant`                 | Container name                                   |
+| `--privileged`                         | Full hardware access (required for USB/Zigbee)   |
+| `--restart=unless-stopped`             | Auto-restart on boot                             |
+| `-e TZ=Asia/Shanghai`                  | Set timezone (change to yours)                   |
+| `-v /opt/homeassistant/config:/config` | Store config on host                             |
+| `--network=host`                       | Use host network (required for device discovery) |
+
+**Verify Home Assistant is running**
+```bash
+docker ps
+```
+
+**Access Home Assistant**
+
+Open browser and go to:
+
+`http://<your-purple-pi-ip>:8123`
+
+You will be able to see the welcome page. After completing the setup wizard with your username and password, you can access the dashboard page.
+
+![tutlesim](images/HA_dashboard.png)
+
+### Manage Home Assistant Container
+
+| Command                                                    | Action                          |
+| ---------------------------------------------------------- | ------------------------------- |
+| `docker stop homeassistant`                                | Stop HA                         |
+| `docker start homeassistant`                               | Start HA                        |
+| `docker restart homeassistant`                             | Restart HA                      |
+| `docker logs homeassistant`                                | View logs                       |
+| `docker rm -f homeassistant`                               | Remove container (config stays) |
+| `docker pull ghcr.io/home-assistant/home-assistant:stable` | Update HA image                 |
+
+### How to Update Home Assistant
+
+```bash
+docker stop homeassistant
+docker rm homeassistant
+docker pull ghcr.io/home-assistant/home-assistant:stable
+```
+
+Then run the Docker `run` command from above again.
+
 
 
 
