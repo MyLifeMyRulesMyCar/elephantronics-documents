@@ -1,0 +1,346 @@
+/* ── Brand colors ─────────────────────────────────────────── */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #0A5C8A;
+  --md-primary-fg-color--light: #1A7DB5;
+  --md-primary-fg-color--dark:  #063D5E;
+  --md-accent-fg-color:         #00C48C;
+  --md-typeset-a-color:         #0A5C8A;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #1A7DB5;
+  --md-accent-fg-color:         #00C48C;
+  --md-default-bg-color:        #0d1117;
+  --md-default-fg-color:        #e6edf3;
+  --md-typeset-a-color:         #58a6ff;
+}
+
+/* ── Fonts ────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+/* ── Hero section on homepage ─────────────────────────────── */
+.hero-section {
+  background: linear-gradient(135deg, #0A5C8A 0%, #063D5E 50%, #041f30 100%);
+  padding: 5rem 2rem 4rem;
+  text-align: center;
+  margin: -1.5rem -1.5rem 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.hero-section .hero-badge {
+  display: inline-block;
+  background: rgba(0,196,140,0.15);
+  border: 1px solid rgba(0,196,140,0.4);
+  color: #00C48C;
+  padding: 0.3rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.hero-section h1 {
+  color: #ffffff !important;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+
+.hero-section p {
+  color: rgba(255,255,255,0.75);
+  font-size: 1.15rem;
+  max-width: 580px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+}
+
+.hero-btn-primary {
+  background: #00C48C;
+  color: #041f30 !important;
+}
+
+.hero-btn-primary:hover {
+  background: #00e0a0;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0,196,140,0.35);
+}
+
+.hero-btn-secondary {
+  background: rgba(255,255,255,0.1);
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.hero-btn-secondary:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-1px);
+}
+
+/* ── Category cards ───────────────────────────────────────── */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin: 2rem 0;
+}
+
+.category-card {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 1rem;
+  padding: 1.75rem;
+  text-decoration: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: all 0.25s ease;
+  background: var(--md-default-bg-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--card-accent, #0A5C8A);
+  border-radius: 1rem 1rem 0 0;
+}
+
+.category-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+  border-color: var(--card-accent, #0A5C8A);
+}
+
+.category-card .card-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.category-card .card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+  margin: 0;
+}
+
+.category-card .card-desc {
+  font-size: 0.88rem;
+  color: var(--md-default-fg-color--light);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.category-card .card-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--card-accent, #0A5C8A);
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+/* ── Product cards ─────────────────────────────────────────── */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin: 2rem 0;
+}
+
+.product-card {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.875rem;
+  padding: 1.5rem;
+  text-decoration: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: all 0.2s ease;
+  background: var(--md-default-bg-color);
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  border-color: #0A5C8A;
+}
+
+.product-card .prod-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #00C48C;
+}
+
+.product-card .prod-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+  margin: 0;
+}
+
+.product-card .prod-tagline {
+  font-size: 0.87rem;
+  color: var(--md-default-fg-color--light);
+  line-height: 1.5;
+}
+
+.product-card .prod-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.prod-spec-tag {
+  background: var(--md-code-bg-color);
+  color: var(--md-default-fg-color--light);
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.3rem;
+  font-size: 0.75rem;
+  font-family: var(--md-code-font-family);
+}
+
+.prod-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #0A5C8A;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+/* ── Section header ────────────────────────────────────────── */
+.section-hero {
+  background: linear-gradient(135deg, var(--section-color-from, #0A5C8A), var(--section-color-to, #041f30));
+  border-radius: 1rem;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-hero::after {
+  content: attr(data-icon);
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 5rem;
+  opacity: 0.12;
+  line-height: 1;
+}
+
+.section-hero h1 {
+  color: white !important;
+  font-size: 2rem;
+  margin: 0 0 0.5rem;
+}
+
+.section-hero p {
+  color: rgba(255,255,255,0.8);
+  font-size: 1rem;
+  margin: 0;
+  max-width: 500px;
+}
+
+/* ── Specs table ───────────────────────────────────────────── */
+.specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+}
+
+.specs-table th {
+  background: var(--md-primary-fg-color);
+  color: white;
+  text-align: left;
+  padding: 0.65rem 1rem;
+  font-weight: 600;
+}
+
+.specs-table td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.specs-table tr:nth-child(even) td {
+  background: var(--md-code-bg-color);
+}
+
+/* ── Status badges ─────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-green  { background: #d1fae5; color: #065f46; }
+.badge-blue   { background: #dbeafe; color: #1e40af; }
+.badge-orange { background: #ffedd5; color: #9a3412; }
+
+[data-md-color-scheme="slate"] .badge-green  { background: #064e3b; color: #6ee7b7; }
+[data-md-color-scheme="slate"] .badge-blue   { background: #1e3a5f; color: #93c5fd; }
+[data-md-color-scheme="slate"] .badge-orange { background: #431407; color: #fdba74; }
+
+/* ── Callout quick-start box ──────────────────────────────── */
+.quick-start {
+  border: 1px solid var(--md-accent-fg-color);
+  border-left: 4px solid var(--md-accent-fg-color);
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  background: rgba(0,196,140,0.04);
+}
+
+.quick-start h4 {
+  color: #00a878;
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
